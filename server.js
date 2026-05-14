@@ -1,6 +1,5 @@
 const express = require("express");
-const fetch = require("node-fetch");
-import cors from "cors";
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
@@ -13,7 +12,7 @@ let lastOffline = null;
 
 async function checkServer() {
   try {
-    const res = await fetch(API);
+    const res = await fetch(API); // Node 18+ has built-in fetch
     const data = await res.json();
 
     if (data.online) {
@@ -32,24 +31,17 @@ async function checkServer() {
   }
 }
 
-// run every 30 seconds
 setInterval(checkServer, 30000);
 checkServer();
 
-// homepage fix
 app.get("/", (req, res) => {
   res.send("MC Status API running. Use /status");
 });
 
-// status endpoint
 app.get("/status", (req, res) => {
-  res.json({
-    status,
-    lastOffline
-  });
+  res.json({ status, lastOffline });
 });
 
-// render port fix
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
