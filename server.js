@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-const SERVER_IP = "YOURSERVER.aternos.me";
+const SERVER_IP = "AtlasWNations.aternos.me";
 const API = `https://api.mcsrvstat.us/2/${SERVER_IP}`;
 
 let status = "unknown";
