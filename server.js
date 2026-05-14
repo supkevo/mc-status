@@ -1,9 +1,7 @@
 const express = require("express");
 const fetch = require("node-fetch");
-const cors = require("cors");
 
 const app = express();
-app.use(cors());
 
 const SERVER_IP = "AtlasWNations.aternos.me";
 const API = `https://api.mcsrvstat.us/2/${SERVER_IP}`;
