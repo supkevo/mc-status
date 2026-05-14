@@ -44,3 +44,7 @@ app.get("/status", (req, res) => {
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+
+app.get("/", (req, res) => {
+  res.send("MC Status API is running. Use /status");
+});
