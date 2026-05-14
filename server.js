@@ -16,25 +16,40 @@ async function checkServer() {
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("API RESPONSE:", data);
-
-    // SIMPLE RELIABLE CHECK
     const actuallyOnline = data?.online === true;
 
-    // STATE CHANGE LOGIC
+    if (status === "unknown") {
+      status = actuallyOnline ? "online" : "offline";
+
+      if (!actuallyOnline) {
+        lastOffline = Date.now();
+      }
+
+      return;
+    }
+
     if (actuallyOnline) {
 
       status = "online";
 
     } else {
 
-      status = "offline";
-
-      // ONLY set timestamp when switching ONLINE → OFFLINE
-      if (lastStatus === "online") {
+      if (status === "online") {
         lastOffline = Date.now();
       }
+
+      status = "offline";
     }
+
+  } catch (e) {
+
+    if (status !== "offline") {
+      lastOffline = Date.now();
+    }
+
+    status = "offline";
+  }
+}
 
     lastStatus = status;
 
