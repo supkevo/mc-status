@@ -17,7 +17,6 @@ async function checkServer() {
 
     const actuallyOnline = data?.online === true;
 
-    // FIRST RUN FIX (prevents null + wrong state)
     if (status === "unknown") {
       status = actuallyOnline ? "online" : "offline";
 
@@ -28,14 +27,12 @@ async function checkServer() {
       return;
     }
 
-    // STATE CHANGE LOGIC
     if (actuallyOnline) {
 
       status = "online";
 
     } else {
 
-      // ONLY set timestamp when going ONLINE → OFFLINE
       if (status === "online") {
         lastOffline = Date.now();
       }
@@ -47,7 +44,6 @@ async function checkServer() {
 
     console.log("ERROR:", e);
 
-    // treat errors as offline
     if (status === "online") {
       lastOffline = Date.now();
     }
