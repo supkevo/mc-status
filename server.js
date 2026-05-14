@@ -1,6 +1,9 @@
+const express = require("express");
 const cors = require("cors");
+const fetch = require("node-fetch");
 
 const app = express();
+
 app.use(cors());
 
 const SERVER_IP = "AtlasWNations.aternos.me";
@@ -16,9 +19,8 @@ async function checkServer() {
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("API RESPONSE:", data);
+    console.log(data);
 
-    // better Aternos detection
     const actuallyOnline =
       data.online === true &&
       data.debug &&
@@ -30,7 +32,6 @@ async function checkServer() {
 
     } else {
 
-      // only set timestamp first time going offline
       if (status !== "offline") {
         lastOffline = Date.now();
       }
@@ -40,7 +41,7 @@ async function checkServer() {
 
   } catch (e) {
 
-    console.log("ERROR:", e);
+    console.log(e);
 
     if (status !== "offline") {
       lastOffline = Date.now();
@@ -50,18 +51,16 @@ async function checkServer() {
   }
 }
 
-// check every 5 seconds
-setInterval(checkServer, 5000);
-
-// first check immediately
 checkServer();
 
-// homepage
+setInterval(checkServer, 5000);
+
 app.get("/", (req, res) => {
+
   res.send("MC Status API Running");
+
 });
 
-// status endpoint
 app.get("/status", (req, res) => {
 
   res.json({
@@ -71,9 +70,10 @@ app.get("/status", (req, res) => {
 
 });
 
-// Render port
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
   console.log("Running on port " + PORT);
+
 });
