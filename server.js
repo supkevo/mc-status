@@ -8,31 +8,32 @@ const SERVER_IP = "AtlasWNations.aternos.me";
 const API = `https://api.mcsrvstat.us/2/${SERVER_IP}`;
 
 let status = "unknown";
-let lastOffline = null;
 let lastStatus = "unknown";
+let lastOffline = null;
 
 async function checkServer() {
   try {
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("API:", data);
+    console.log("API RESPONSE:", data);
 
-    // SIMPLE + RELIABLE (DO NOT OVERCOMPLICATE)
-    const actuallyOnline = data && data.online === true;
+    // SIMPLE RELIABLE CHECK
+    const actuallyOnline = data?.online === true;
 
+    // STATE CHANGE LOGIC
     if (actuallyOnline) {
 
       status = "online";
 
     } else {
 
-      // only set offline time when it FIRST changes to offline
-      if (lastStatus !== "offline") {
+      status = "offline";
+
+      // ONLY set timestamp when switching ONLINE → OFFLINE
+      if (lastStatus === "online") {
         lastOffline = Date.now();
       }
-
-      status = "offline";
     }
 
     lastStatus = status;
@@ -41,27 +42,26 @@ async function checkServer() {
 
     console.log("ERROR:", e);
 
-    if (lastStatus !== "offline") {
+    status = "offline";
+
+    // only set timestamp if it was previously online
+    if (lastStatus === "online") {
       lastOffline = Date.now();
     }
 
-    status = "offline";
     lastStatus = status;
   }
 }
 
-// run immediately
 checkServer();
 
-// check every 5 seconds
-setInterval(checkServer, 5000);
+setInterval(checkServer, 15000);
 
-// homepage
 app.get("/", (req, res) => {
   res.send("MC Status API Running");
 });
 
-// status endpoint
+// API route
 app.get("/status", (req, res) => {
   res.json({
     status,
@@ -69,7 +69,6 @@ app.get("/status", (req, res) => {
   });
 });
 
-// render port
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
